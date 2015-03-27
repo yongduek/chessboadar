@@ -181,6 +181,150 @@ struct myCam {
         //        if (tz>-9.f)  dz = -0.01f;
     }
     
+    
+    
+
+    void drawWorldAxes ()
+    {
+    
+    struct glcontext {
+        GLuint program;
+        bool flagInit;
+        glcontext() { flagInit=false; }
+    };
+
+    static glcontext glc;
+    
+
+    if (glc.flagInit==false) {
+        glc.flagInit=true;
+        
+        static const char * vs_source_drawCoordAxes[] =
+        {
+        "#version 330 core                              \n"
+        "                                                                               \n"
+        "uniform mat4 MVP;                                                              \n"
+        "out vec4 color_vs;                                                                \n"
+        "void main(void)                                                                \n"
+        "{                                                                              \n"
+        "    const vec4 vertices[] = vec4[](vec4( 0., 0., 0., 1.0),      //origin         \n"
+        "                                   vec4( 1., 0., 0., 1.0),      //x-axis         \n"
+        "                                   vec4( 0., 0., 0., 1.0),      //origin         \n"
+        "                                   vec4( 0., 1., 0., 1.0),      //y-axis         \n"
+        "                                   vec4( 0., 0., 0., 1.0),      //origin         \n"
+        "                                   vec4( 0., 0., 1., 1.0)      //z-axis         \n"
+        "                                   );              \n"
+        "    const vec4 colors[] = vec4[](vec4( 1., 0., 0., 1.0),      // red         \n"
+        "                                 vec4( 1., 0., 0., 1.0),      // green         \n"
+        "                                 vec4( 0., 1., 0., 1.0),      // green         \n"
+        "                                 vec4( 0., 1., 0., 1.0),      // green         \n"
+        "                                 vec4( 0., 0., 1., 1.0)      //  blue         \n"
+        "                                 vec4( 0., 0., 1., 1.0)      //  blue         \n"
+        "                                 );              \n"
+        "                                                                               \n"
+        "    gl_Position = MVP * vertices[gl_VertexID];                                 \n"
+        "    color_vs = colors[gl_VertexID];                                 \n"
+        "}                                                                              \n"
+        };
+        
+        static const char * fs_source_drawCoordAxes[] =
+        {
+        "#version 330 core                                                              \n"
+        "                                                                               \n"
+        "in  vec4 color_vs;                                                             \n"
+        "out vec4 color;                                                                \n"
+        "                                                                               \n"
+        "void main(void)                                                                \n"
+        "{                                                                              \n"
+        "    color = vec4(1.,1.,.1,1.); //color_vs;                                                          \n"
+        "    color = color_vs;                                                          \n"
+        "}                                                                              \n"
+        };
+        
+
+        glc.program = glCreateProgram();
+        GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fs, 1, fs_source_drawCoordAxes, NULL);
+        glCompileShader(fs);
+        
+        print_shader_log(fs);
+        
+        GLuint vs = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vs, 1, vs_source_drawCoordAxes, NULL);
+        glCompileShader(vs);
+        
+        print_shader_log(vs);
+        
+        glAttachShader(glc.program, vs);
+        glAttachShader(glc.program, fs);
+        
+        glLinkProgram(glc.program);
+        
+        cerr << "myCam::drawWorldAxes::glc.program= " << glc.program << endl;
+    }
+    
+    // draw main
+    glUseProgram (glc.program);
+    glEnable (GL_DEPTH_TEST);
+    
+    //
+    //
+    cv::Point3f ilt(0,0,1), ilb(0,height-1,1), irt(width-1,0,1), irb(width-1,height-1,1);
+    cv::Mat_<double> Ci = this->K.inv();
+    cv::Mat_<double> lt = Ci*cv::Mat_<double>(ilt); //, lb=Ci*ilb, rt=Ci*irt, rb=Ci*irb;
+    cv::Mat_<double> rb = Ci*cv::Mat_<double>(irb); //, lb=Ci*ilb, rt=Ci*irt, rb=Ci*irb;
+                                                    //    cerr << "Ci: " << Ci << endl;
+                                                    //    cerr << "lt: " << (ilt) << " --> " << (lt.t()) << endl;
+                                                    //    cerr << "rb: " << (irb) << " --> " << (rb.t()) << endl;
+    float left = lt(0);
+    float right = rb(0);
+    float bottom = rb(1);
+    float top = lt(1);
+    cerr << "lrbt=(" << left << "," << right << "," << -bottom << "," << -top << ")" << endl;
+    
+    glm::mat4 Proj = glm::frustum(left, right, -bottom, -top, 0.9f, 100.f);
+    Proj = glm::perspective(40.0f, 4.0f / 3.0f, 0.1f, 50.0f);
+    //Proj=glm::mat4(1.0);
+    
+    cv::Mat_<double> A = cv::Mat_<double>::eye(3, 3);
+    A(1,1)=A(2,2)= -1.0;
+    cv::Mat_<double> R2 = A*this->Rmat;
+    cv::Mat_<double> t2 = A*this->tvec;
+    
+    glm::mat4 Model = glm::mat4(1.0f);
+    
+    for (int i=0; i<3; i++) {
+        //        for (int j=0; j<3; j++)
+        //            Model[i][j] = R2(i,j);
+        //        Model[i][3]=t2(i);
+    }
+    //    cerr << "R2=" << R2 << endl;
+    //    cerr << "t2=" << t2.t() << endl;
+    //    exit (0);
+    static float z=-1, dz=-0.1;
+    if (z>-1) dz = -0.1;
+    if (z<-30) dz = +0.1;
+    z += dz;
+    //    cerr << "z=" << z << endl;
+    //
+    Model[1][3] = z;
+    Model[2][3] = -2.5;
+    
+    cerr << "M: " << to_string(Model) << endl;
+    
+    
+    glm::mat4 MVP = Proj*Model;
+    
+    GLuint mvpID = glGetUniformLocation(glc.program, "MVP");
+    glUniformMatrix4fv(mvpID, 1, GL_FALSE, glm::value_ptr(MVP));
+    
+    glPointSize(16);
+    glDrawArrays(GL_POINTS, 0, 6);
+    
+    return;
+    } // drawFrameAxes()
+    
+
 public:
     cv::Mat_<double> K, rvec, Rmat, tvec;
     cv::Mat image;
