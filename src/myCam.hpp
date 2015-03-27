@@ -57,7 +57,7 @@ struct myCam {
         texImage = cv::Mat(texHeight=512,texWidth=1024,CV_8UC3, cv::Scalar(0,0,0));
         cv::Mat simg = texImage(cv::Rect(0,512-image.rows-1, image.cols, image.rows));
         image.copyTo(simg);
-        cv::flip(texImage, texImage, 0);
+//        cv::flip(texImage, texImage, 0);
         //        cv::imshow("textureImage", texImage); // will be upside down
         //        cv::imshow("srcImage", image);
         
@@ -124,7 +124,7 @@ struct myCam {
         "                                                                               \n"
         "void main(void)                                                                \n"
         "{                                                                              \n"
-        "    color = texture(s, gl_FragCoord.xy /textureSize(s,0) );                   \n"
+        "    color = texture(s, vec2(gl_FragCoord.x, 1-gl_FragCoord.y) /textureSize(s,0) ); \n"
         "    //color = texture(s, gl_FragCoord.xy / textureSize(s, 0));                   \n"
         "    //color = vec4(0.5,0,0,0.5); //texture(s, gl_FragCoord.xy / textureSize(s, 0)); \n"
         "}                                                                              \n"

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0C96DB61AC52E2F0018B4AE /* glInit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0C96DB41AC52E2F0018B4AE /* glInit.cpp */; };
 		B0F247311AC291C6002BFDED /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0F2472B1AC291C6002BFDED /* main.cpp */; };
 		B0F247321AC291C6002BFDED /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = B0F2472C1AC291C6002BFDED /* Makefile */; };
 		B0F247331AC291C6002BFDED /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0F2472D1AC291C6002BFDED /* shader.cpp */; };
@@ -81,6 +82,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B0C96DB41AC52E2F0018B4AE /* glInit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = glInit.cpp; sourceTree = "<group>"; };
+		B0C96DB51AC52E2F0018B4AE /* glInit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glInit.h; sourceTree = "<group>"; };
 		B0F2471E1AC2918E002BFDED /* cbarXcode */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cbarXcode; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0F247291AC291C6002BFDED /* box.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box.obj; sourceTree = "<group>"; };
 		B0F2472A1AC291C6002BFDED /* ColorFragmentShader.fs */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = ColorFragmentShader.fs; sourceTree = "<group>"; };
@@ -246,6 +249,8 @@
 			isa = PBXGroup;
 			children = (
 				B0F2472B1AC291C6002BFDED /* main.cpp */,
+				B0C96DB41AC52E2F0018B4AE /* glInit.cpp */,
+				B0C96DB51AC52E2F0018B4AE /* glInit.h */,
 				B0F247A81AC2D813002BFDED /* myCube.hpp */,
 				B0F247A71AC2D7AA002BFDED /* myCam.hpp */,
 				B0F2472D1AC291C6002BFDED /* shader.cpp */,
@@ -379,6 +384,7 @@
 			files = (
 				B0F247331AC291C6002BFDED /* shader.cpp in Sources */,
 				B0F247321AC291C6002BFDED /* Makefile in Sources */,
+				B0C96DB61AC52E2F0018B4AE /* glInit.cpp in Sources */,
 				B0F247311AC291C6002BFDED /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -521,6 +527,7 @@
 				B0F247271AC2918E002BFDED /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
